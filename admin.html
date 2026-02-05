@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>အက်ဒမင်စာမျက်နှာ - သူရိယအွန်လိုင်းသတင်းစာ</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Padauk&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
+    
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <style>
+        /* Admin Specific Styles */
+        .admin-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: var(--spacing-lg);
+        }
+        
+        .admin-header {
+            background: var(--primary-color);
+            color: var(--white);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius-md);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .admin-nav {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+        
+        .admin-nav a {
+            color: var(--white);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius-sm);
+            background: rgba(255, 255, 255, 0.1);
+            transition: background var(--transition-fast);
+        }
+        
+        .admin-nav a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            text-decoration: none;
+        }
+        
+        .admin-nav a.active {
+            background: var(--secondary-color);
+        }
+        
+        /* Dashboard Cards */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .dashboard-card {
+            background: var(--white);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius-md);
+            box-shadow: var(--box-shadow-sm);
+            text-align: center;
+            transition: transform var(--transition-normal);
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--box-shadow-md);
+        }
+        
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .card-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .card-label {
+            color: var(--dark-gray);
+            font-size: 0.875rem;
+        }
+        
+        /* Form Styles */
+        .form-container {
+            background: var(--white);
+            padding: var(--spacing-xl);
+            border-radius: var(--border-radius-md);
+            box-shadow: var(--box-shadow-sm);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: var(--spacing-xs);
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius-sm);
+            font-family: var(--font-primary);
+            font-size: 1rem;
+            transition: border-color var(--transition-fast);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .form-helper {
+            color: var(--dark-gray);
+            font-size: 0.875rem;
+            margin-top: var(--spacing-xs);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+        }
+        
+        /* Tag Input */
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-xs);
+            padding: var(--spacing-sm);
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius-sm);
+            min-height: 50px;
+        }
+        
+        .tag-item {
+            background: var(--secondary-color);
+            color: var(--white);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+        
+        .tag-remove {
+            background: none;
+            border: none;
+            color: var(--white);
+            cursor: pointer;
+            font-size: 1rem;
+            line-height: 1;
+            padding: 0;
+        }
+        
+        .tag-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: var(--spacing-xs);
+            font-family: var(--font-primary);
+            min-width: 100px;
+        }
+        
+        /* Switch Toggle */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--medium-gray);
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: var(--white);
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--success-color);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+        
+        /* News List */
+        .news-list {
+            background: var(--white);
+            border-radius: var(--border-radius-md);
+            overflow: hidden;
+            box-shadow: var(--box-shadow-sm);
+        }
+        
+        .news-list-header {
+            display: grid;
+            grid-template-columns: 40px 3fr 1fr 1fr 100px;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: var(--primary-color);
+            color: var(--white);
+            font-weight: 600;
+        }
+        
+        .news-list-item {
+            display: grid;
+            grid-template-columns: 40px 3fr 1fr 1fr 100px;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--medium-gray);
+            align-items: center;
+        }
+        
+        .news-list-item:hover {
+            background: var(--light-gray);
+        }
+        
+        .news-status {
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--border-radius-sm);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .status-published {
+            background: var(--success-color);
+            color: var(--white);
+        }
+        
+        .status-draft {
+            background: var(--warning-color);
+            color: var(--white);
+        }
+        
+        .status-pending {
+            background: var(--info-color);
+            color: var(--white);
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--white);
+            border-radius: var(--border-radius-md);
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            padding: var(--spacing-lg);
+            background: var(--primary-color);
+            color: var(--white);
+            border-radius: var(--border-radius-md) var(--border-radius-md) 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 1.5rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+        
+        .modal-body {
+            padding: var(--spacing-lg);
+        }
+        
+        /* Alert Messages */
+        .alert {
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius-sm);
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .news-list-header,
+            .news-list-item {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-sm);
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">📰</span>
+                <span class="logo-text">သူရိယ<span class="logo-highlight">သတင်းစာ</span></span>
+            </a>
+            
+            <nav class="main-nav">
+                <ul class="nav-links">
+                    <li><a href="index.html">ပင်မစာမျက်နှာ</a></li>
+                    <li><a href="news.html">သတင်းများ</a></li>
+                    <li><a href="admin.html" class="active">အက်ဒမင်</a></li>
+                </ul>
+                
+                <div class="auth-section">
+                    <button id="logoutBtn" class="btn btn-primary">Logout</button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Admin Container -->
+    <div class="admin-container">
+        <!-- Admin Header -->
+        <div class="admin-header">
+            <h1>အက်ဒမင်စာမျက်နှာ</h1>
+            <p id="adminWelcome">သတင်းစီမံခန့်ခွဲမှုစနစ်</p>
+            
+            <div class="admin-nav">
+                <a href="#dashboard" class="active" onclick="showSection('dashboard')">ဒက်ရှ်ဘုတ်</a>
+                <a href="#add-news" onclick="showSection('add-news')">သတင်းအသစ်ထည့်ရန်</a>
+                <a href="#manage-news" onclick="showSection('manage-news')">သတင်းများစီမံရန်</a>
+                <a href="#categories" onclick="showSection('categories')">ကဏ္ဍများ</a>
+                <a href="#users" onclick="showSection('users')">အသုံးပြုသူများ</a>
+            </div>
+        </div>
+
+        <!-- Alert Container -->
+        <div id="alertContainer"></div>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="section active">
+            <h2 class="section-title">ဒက်ရှ်ဘုတ်</h2>
+            
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <div class="card-icon">📰</div>
+                    <div class="card-value" id="totalNews">0</div>
+                    <div class="card-label">စုစုပေါင်းသတင်းများ</div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="card-icon">📊</div>
+                    <div class="card-value" id="publishedNews">0</div>
+                    <div class="card-label">ထုတ်ပြန်ပြီးသတင်းများ</div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="card-icon">📝</div>
+                    <div class="card-value" id="draftNews">0</div>
+                    <div class="card-label">အကြမ်းသတင်းများ</div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="card-icon">👥</div>
+                    <div class="card-value" id="totalCategories">0</div>
+                    <div class="card-label">စုစုပေါင်းကဏ္ဍများ</div>
+                </div>
+            </div>
+            
+            <div class="quick-actions">
+                <h3>အမြန်လုပ်ဆောင်ချက်များ</h3>
+                <div class="action-buttons">
+                    <button onclick="showSection('add-news')" class="btn btn-primary">
+                        + သတင်းအသစ်ထည့်ရန်
+                    </button>
+                    <button onclick="showSection('manage-news')" class="btn btn-secondary">
+                        📝 သတင်းများစီမံရန်
+                    </button>
+                    <button onclick="showSection('categories')" class="btn btn-success">
+                        🏷️ ကဏ္ဍများစီမံရန်
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Add News Section -->
+        <section id="add-news" class="section" style="display: none;">
+            <h2 class="section-title">သတင်းအသစ်ထည့်သွင်းရန်</h2>
+            
+            <div class="form-container">
+                <form id="newsForm">
+                    <div class="form-group">
+                        <label for="newsTitle" class="form-label">သတင်းခေါင်းစဉ် *</label>
+                        <input type="text" id="newsTitle" class="form-control" 
+                               placeholder="သတင်းခေါင်းစဉ်ထည့်ပါ..." required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="newsCategory" class="form-label">ကဏ္ဍ *</label>
+                            <select id="newsCategory" class="form-control" required>
+                                <option value="">ကဏ္ဍရွေးချယ်ပါ...</option>
+                                <!-- Categories will be loaded here -->
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="newsAuthor" class="form-label">သတင်းထောက်</label>
+                            <input type="text" id="newsAuthor" class="form-control" 
+                                   placeholder="သတင်းထောက်အမည်">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="newsSummary" class="form-label">အကျဉ်းချုပ်</label>
+                        <textarea id="newsSummary" class="form-control" 
+                                  placeholder="သတင်းအကျဉ်းချုပ်..." rows="3"></textarea>
+                        <div class="form-helper">ဤအကျဉ်းချုပ်ကို သတင်းစာရင်းတွင် ပြသပါမည်</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="newsContent" class="form-label">သတင်းအကြောင်းအရာ *</label>
+                        <textarea id="newsContent" class="form-control" 
+                                  placeholder="သတင်းအကြောင်းအရာထည့်ပါ..." 
+                                  rows="10" required></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">တဂ်များ</label>
+                            <div class="tags-container" id="tagsContainer">
+                                <!-- Tags will be added here -->
+                                <input type="text" id="tagInput" class="tag-input" 
+                                       placeholder="တဂ်ထည့်ပါ... (Enter နှိပ်ပါ)">
+                            </div>
+                            <div class="form-helper">တဂ်တစ်ခုချင်းစီကို Enter နှိပ်၍ ထည့်ပါ</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">အခြေအနေ</label>
+                            <div class="form-control" style="border: none; padding: 0;">
+                                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                    <span>အကြမ်း</span>
+                                    <label class="switch">
+                                        <input type="checkbox" id="newsPublished">
+                                        <span class="slider"></span>
+                                    </label>
+                                    <span>ထုတ်ပြန်မည်</span>
+                                </label>
+                            </div>
+                            <div class="form-helper" id="statusText">အကြမ်းအနေဖြင့် သိမ်းဆည်းပါမည်</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" onclick="clearForm()" class="btn btn-outline">
+                            ရှင်းလင်းရန်
+                        </button>
+                        <button type="button" onclick="saveAsDraft()" class="btn btn-secondary">
+                            အကြမ်းသိမ်းရန်
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            ထုတ်ပြန်ရန်
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Manage News Section -->
+        <section id="manage-news" class="section" style="display: none;">
+            <h2 class="section-title">သတင်းများစီမံရန်</h2>
+            
+            <div class="filter-section">
+                <div class="filter-grid">
+                    <div class="filter-group">
+                        <label for="filterStatus" class="filter-label">အခြေအနေစစ်ရန်</label>
+                        <select id="filterStatus" class="filter-select">
+                            <option value="all">အားလုံး</option>
+                            <option value="published">ထုတ်ပြန်ပြီး</option>
+                            <option value="draft">အကြမ်း</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="filterCategory" class="filter-label">ကဏ္ဍစစ်ရန်</label>
+                        <select id="filterCategory" class="filter-select">
+                            <option value="all">ကဏ္ဍအားလုံး</option>
+                            <!-- Categories will be loaded here -->
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="filterSearch" class="filter-label">ရှာဖွေရန်</label>
+                        <input type="text" id="filterSearch" class="filter-input" 
+                               placeholder="ခေါင်းစဉ် သို့မဟုတ် အကြောင်းအရာရှာရန်...">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="news-list" id="newsList">
+                <div class="news-list-header">
+                    <div>စဉ်</div>
+                    <div>ခေါင်းစဉ်</div>
+                    <div>ကဏ္ဍ</div>
+                    <div>ရက်စွဲ</div>
+                    <div>လုပ်ဆောင်ချက်များ</div>
+                </div>
+                
+                <div id="newsListContent">
+                    <div class="loading">သတင်းများ ဖော်ပြခြင်း...</div>
+                </div>
+            </div>
+            
+            <div class="pagination" id="newsPagination">
+                <!-- Pagination will be generated here -->
+            </div>
+        </section>
+
+        <!-- Categories Section -->
+        <section id="categories" class="section" style="display: none;">
+            <h2 class="section-title">ကဏ္ဍများစီမံရန်</h2>
+            
+            <div class="form-container">
+                <h3>ကဏ္ဍအသစ်ထည့်ရန်</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="categoryName" class="form-label">ကဏ္ဍအမည် *</label>
+                        <input type="text" id="categoryName" class="form-control" 
+                               placeholder="ကဏ္ဍအမည်ထည့်ပါ...">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="categorySlug" class="form-label">Slug *</label>
+                        <input type="text" id="categorySlug" class="form-control" 
+                               placeholder="english-slug">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="categoryOrder" class="form-label">စီစဉ်မှု *</label>
+                        <input type="number" id="categoryOrder" class="form-control" 
+                               value="1" min="1">
+                    </div>
+                </div>
+                
+                <button onclick="addCategory()" class="btn btn-primary">
+                    ကဏ္ဍထည့်ရန်
+                </button>
+            </div>
+            
+            <div class="categories-list" id="categoriesList">
+                <div class="loading">ကဏ္ဍများ ဖော်ပြခြင်း...</div>
+            </div>
+        </section>
+
+        <!-- Users Section -->
+        <section id="users" class="section" style="display: none;">
+            <h2 class="section-title">အသုံးပြုသူများ</h2>
+            <div class="alert alert-info">
+                ⚠️ ဤအပိုင်းကို နောက်ပိုင်းဗားရှင်းတွင် ထည့်သွင်းပါမည်။
+            </div>
+        </section>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>သတင်းပြင်ဆင်ရန်</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Edit form will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Configuration -->
+    <script src="js/firebase-config.js"></script>
+    
+    <!-- Admin JavaScript -->
+    <script>
+        // Global Variables
+        let currentUser = null;
+        let categories = [];
+        let news = [];
+        let currentEditId = null;
+        let tags = [];
+        
+        // DOM Elements
+        const sections = document.querySelectorAll('.section');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const adminWelcome = document.getElementById('adminWelcome');
+        const alertContainer = document.getElementById('alertContainer');
+        
+        // Dashboard Elements
+        const totalNewsEl = document.getElementById('totalNews');
+        const publishedNewsEl = document.getElementById('publishedNews');
+        const draftNewsEl = document.getElementById('draftNews');
+        const totalCategoriesEl = document.getElementById('totalCategories');
+        
+        // Form Elements
+        const newsForm = document.getElementById('newsForm');
+        const newsTitle = document.getElementById('newsTitle');
+        const newsCategory = document.getElementById('newsCategory');
+        const newsAuthor = document.getElementById('newsAuthor');
+        const newsSummary = document.getElementById('newsSummary');
+        const newsContent = document.getElementById('newsContent');
+        const newsPublished = document.getElementById('newsPublished');
+        const statusText = document.getElementById('statusText');
+        const tagsContainer = document.getElementById('tagsContainer');
+        const tagInput = document.getElementById('tagInput');
+        
+        // Manage News Elements
+        const filterStatus = document.getElementById('filterStatus');
+        const filterCategory = document.getElementById('filterCategory');
+        const filterSearch = document.getElementById('filterSearch');
+        const newsListContent = document.getElementById('newsListContent');
+        const newsPagination = document.getElementById('newsPagination');
+        
+        // Categories Elements
+        const categoryName = document.getElementById('categoryName');
+        const categorySlug = document.getElementById('categorySlug');
+        const categoryOrder = document.getElementById('categoryOrder');
+        const categoriesList = document.getElementById('categoriesList');
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            loadCategories();
+            setupEventListeners();
+        });
+        
+        // Check Authentication
+        async function checkAuth() {
+            if (!window.firebaseAuth) {
+                showAlert('Firebase မတပ်ဆင်ရသေး', 'error');
+                return;
+            }
+            
+            window.firebaseAuth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    currentUser = user;
+                    adminWelcome.textContent = `ကြိုဆိုပါတယ် ${user.email}`;
+                    
+                    // Load data
+                    await loadDashboardStats();
+                    await loadAllNews();
+                    await loadCategoriesForSelect();
+                    
+                } else {
+                    // Redirect to login
+                    showAlert('ကျေးဇူးပြု၍ လော့ဂ်အင် ဝင်ပါ', 'warning');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                }
+            });
+        }
+        
+        // Setup Event Listeners
+        function setupEventListeners() {
+            // Logout
+            logoutBtn.addEventListener('click', async () => {
+                try {
+                    await window.firebaseAuth.signOut();
+                    showAlert('အောင်မြင်စွာ လော့ဂ်အောက်ထွက်ပြီး', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1000);
+                } catch (error) {
+                    showAlert('လော့ဂ်အောက် မအောင်မြင်ပါ: ' + error.message, 'error');
+                }
+            });
+            
+            // Publish toggle
+            newsPublished.addEventListener('change', function() {
+                statusText.textContent = this.checked ? 
+                    'ထုတ်ပြန်မည့်အနေဖြင့် သိမ်းဆည်းပါမည်' : 
+                    'အကြမ်းအနေဖြင့် သိမ်းဆည်းပါမည်';
+            });
+            
+            // Tag input
+            tagInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const tag = this.value.trim();
+                    if (tag && !tags.includes(tag)) {
+                        tags.push(tag);
+                        renderTags();
+                        this.value = '';
+                    }
+                }
+            });
+            
+            // News form submission
+            newsForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await saveNews(true);
+            });
+            
+            // Filters
+            filterStatus.addEventListener('change', filterNews);
+            filterCategory.addEventListener('change', filterNews);
+            filterSearch.addEventListener('input', filterNews);
+            
+            // Slug auto-generation
+            categoryName.addEventListener('input', function() {
+                const slug = this.value
+                    .toLowerCase()
+                    .replace(/[^\w\u1000-\u109F\s]/g, '')
+                    .replace(/\s+/g, '-')
+                    .replace(/--+/g, '-');
+                categorySlug.value = slug;
+            });
+        }
+        
+        // Section Navigation
+        function showSection(sectionId) {
+            // Update active nav
+            document.querySelectorAll('.admin-nav a').forEach(a => {
+                a.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Show selected section
+            sections.forEach(section => {
+                section.style.display = section.id === sectionId ? 'block' : 'none';
+            });
+            
+            // Load section data
+            if (sectionId === 'dashboard') {
+                loadDashboardStats();
+            } else if (sectionId === 'manage-news') {
+                loadAllNews();
+            } else if (sectionId === 'categories') {
+                loadCategoriesForManagement();
+            }
+        }
+        
+        // Load Dashboard Statistics
+        async function loadDashboardStats() {
+            try {
+                // Load news stats
+                const newsSnapshot = await window.firebaseDB.collection('news').get();
+                const allNews = newsSnapshot.size;
+                const publishedNews = newsSnapshot.docs.filter(doc => 
+                    doc.data().published === true
+                ).length;
+                const draftNews = allNews - publishedNews;
+                
+                totalNewsEl.textContent = allNews;
+                publishedNewsEl.textContent = publishedNews;
+                draftNewsEl.textContent = draftNews;
+                
+                // Load categories stats
+                const categoriesSnapshot = await window.firebaseDB.collection('categories').get();
+                totalCategoriesEl.textContent = categoriesSnapshot.size;
+                
+            } catch (error) {
+                console.error('Error loading dashboard stats:', error);
+                showAlert('ဒက်ရှ်ဘုတ် အချက်အလက်များ ရယူ၍မရပါ', 'error');
+            }
+        }
+        
+        // Load Categories for Select
+        async function loadCategoriesForSelect() {
+            try {
+                const categoriesData = await window.firebaseHelpers.loadCategories();
+                categories = categoriesData;
+                
+                // Clear and populate category selects
+                [newsCategory, filterCategory].forEach(select => {
+                    const currentValue = select.value;
+                    select.innerHTML = '<option value="">' + 
+                        (select === newsCategory ? 'ကဏ္ဍရွေးချယ်ပါ...' : 'ကဏ္ဍအားလုံး') + 
+                        '</option>';
+                    
+                    categoriesData.forEach(category => {
+                        const option = document.createElement('option');
+                        option.value = category.id;
+                        option.textContent = category.name;
+                        select.appendChild(option);
+                    });
+                    
+                    // Restore previous value if any
+                    if (currentValue) {
+                        select.value = currentValue;
+                    }
+                });
+                
+            } catch (error) {
+                console.error('Error loading categories:', error);
+                showAlert('ကဏ္ဍများ ရယူ၍မရပါ', 'error');
+            }
+        }
+        
+        // Render Tags
+        function renderTags() {
+            tagsContainer.innerHTML = '';
+            
+            tags.forEach((tag, index) => {
+                const tagElement = document.createElement('div');
+                tagElement.className = 'tag-item';
+                tagElement.innerHTML = `
+                    ${tag}
+                    <button class="tag-remove" onclick="removeTag(${index})">&times;</button>
+                `;
+                tagsContainer.appendChild(tagElement);
+            });
+            
+            // Add input field at the end
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'tag-input';
+            input.placeholder = 'တဂ်ထည့်ပါ... (Enter နှိပ်ပါ)';
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const tag = this.value.trim();
+                    if (tag && !tags.includes(tag)) {
+                        tags.push(tag);
+                        renderTags();
+                    }
+                    this.value = '';
+                }
+            });
+            tagsContainer.appendChild(input);
+        }
+        
+        // Remove Tag
+        function removeTag(index) {
+            tags.splice(index, 1);
+            renderTags();
+        }
+        
+        // Save News Article
+        async function saveNews(publish = false) {
+            try {
+                // Validate form
+                if (!newsTitle.value.trim()) {
+                    showAlert('ကျေးဇူးပြု၍ သတင်းခေါင်းစဉ်ထည့်ပါ', 'warning');
+                    newsTitle.focus();
+                    return;
+                }
+                
+                if (!newsCategory.value) {
+                    showAlert('ကျေးဇူးပြု၍ ကဏ္ဍရွေးချယ်ပါ', 'warning');
+                    newsCategory.focus();
+                    return;
+                }
+                
+                if (!newsContent.value.trim()) {
+                    showAlert('ကျေးဇူးပြု၍ သတင်းအကြောင်းအရာထည့်ပါ', 'warning');
+                    newsContent.focus();
+                    return;
+                }
+                
+                // Prepare news data
+                const newsData = {
+                    title: newsTitle.value.trim(),
+                    categoryId: newsCategory.value,
+                    author: newsAuthor.value.trim() || currentUser.email.split('@')[0],
+                    summary: newsSummary.value.trim(),
+                    content: newsContent.value.trim(),
+                    tags: tags,
+                    published: publish,
+                    status: publish ? 'published' : 'draft',
+                    reporterId: currentUser.uid,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    views: 0,
+                    likes: 0
+                };
+                
+                // Save to Firestore
+                let result;
+                if (currentEditId) {
+                    // Update existing news
+                    await window.firebaseDB.collection('news').doc(currentEditId).update(newsData);
+                    result = { success: true, id: currentEditId };
+                } else {
+                    // Add new news
+                    const docRef = await window.firebaseDB.collection('news').add(newsData);
+                    result = { success: true, id: docRef.id };
+                }
+                
+                if (result.success) {
+                    showAlert(
+                        `သတင်း ${publish ? 'ထုတ်ပြန်ပြီး' : 'အကြမ်းသိမ်းဆည်းပြီး'} ID: ${result.id}`,
+                        'success'
+                    );
+                    
+                    // Clear form and reset
+                    clearForm();
+                    currentEditId = null;
+                    
+                    // Update dashboard
+                    loadDashboardStats();
+                    
+                    // Switch to manage news section
+                    showSection('manage-news');
+                    
+                } else {
+                    showAlert('သတင်းသိမ်းဆည်း၍မရပါ', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Error saving news:', error);
+                showAlert('အမှားတက်ခဲ့သည်: ' + error.message, 'error');
+            }
+        }
+        
+        // Save as Draft
+        function saveAsDraft() {
+            saveNews(false);
+        }
+        
+        // Clear Form
+        function clearForm() {
+            newsForm.reset();
+            tags = [];
+            renderTags();
+            statusText.textContent = 'အကြမ်းအနေဖြင့် သိမ်းဆည်းပါမည်';
+            currentEditId = null;
+            showAlert('ဖောင်ရှင်းလင်းပြီးပါပြီ', 'info');
+        }
+        
+        // Load All News for Management
+        async function loadAllNews() {
+            try {
+                newsListContent.innerHTML = '<div class="loading">သတင်းများ ဖော်ပြခြင်း...</div>';
+                
+                const snapshot = await window.firebaseDB.collection('news')
+                    .orderBy('createdAt', 'desc')
+                    .get();
+                
+                news = [];
+                snapshot.forEach(doc => {
+                    news.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+                
+                renderNewsList();
+                
+            } catch (error) {
+                console.error('Error loading news:', error);
+                newsListContent.innerHTML = '<div class="no-results">သတင်းများ ရယူရာတွင် အမှားတက်ခဲ့သည်</div>';
+            }
+        }
+        
+        // Render News List
+        function renderNewsList(filteredNews = news) {
+            if (filteredNews.length === 0) {
+                newsListContent.innerHTML = '<div class="no-results">မည်သည့်သတင်းမျှ မတွေ့ရှိပါ</div>';
+                newsPagination.innerHTML = '';
+                return;
+            }
+            
+            let html = '';
+            filteredNews.forEach((item, index) => {
+                const category = categories.find(cat => cat.id === item.categoryId);
+                const date = item.createdAt ? 
+                    new Date(item.createdAt.toDate()).toLocaleDateString('my-MM') : 
+                    'မသိရ';
+                
+                html += `
+                    <div class="news-list-item">
+                        <div>${index + 1}</div>
+                        <div>
+                            <strong>${item.title}</strong>
+                            <div style="font-size: 0.875rem; color: var(--dark-gray);">
+                                ${item.summary ? item.summary.substring(0, 50) + '...' : ''}
+                            </div>
+                        </div>
+                        <div>${category ? category.name : 'မသိ'}</div>
+                        <div>${date}</div>
+                        <div>
+                            <span class="news-status status-${item.status}">
+                                ${item.status === 'published' ? 'ထုတ်ပြန်ပြီး' : 
+                                  item.status === 'draft' ? 'အကြမ်း' : item.status}
+                            </span>
+                            <button onclick="editNews('${item.id}')" class="btn btn-sm" 
+                                    style="margin-left: 5px;">ပြင်ရန်</button>
+                            <button onclick="deleteNews('${item.id}')" class="btn btn-sm btn-danger" 
+                                    style="margin-left: 5px;">ဖျက်ရန်</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            newsListContent.innerHTML = html;
+        }
+        
+        // Filter News
+        function filterNews() {
+            let filtered = [...news];
+            
+            // Filter by status
+            if (filterStatus.value !== 'all') {
+                filtered = filtered.filter(item => item.status === filterStatus.value);
+            }
+            
+            // Filter by category
+            if (filterCategory.value !== 'all') {
+                filtered = filtered.filter(item => item.categoryId === filterCategory.value);
+            }
+            
+            // Filter by search
+            if (filterSearch.value) {
+                const searchTerm = filterSearch.value.toLowerCase();
+                filtered = filtered.filter(item =>
+                    item.title.toLowerCase().includes(searchTerm) ||
+                    (item.summary && item.summary.toLowerCase().includes(searchTerm)) ||
+                    (item.content && item.content.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            renderNewsList(filtered);
+        }
+        
+        // Edit News
+        async function editNews(newsId) {
+            try {
+                const doc = await window.firebaseDB.collection('news').doc(newsId).get();
+                if (doc.exists) {
+                    const data = doc.data();
+                    
+                    // Populate form
+                    newsTitle.value = data.title || '';
+                    newsCategory.value = data.categoryId || '';
+                    newsAuthor.value = data.author || '';
+                    newsSummary.value = data.summary || '';
+                    newsContent.value = data.content || '';
+                    newsPublished.checked = data.published || false;
+                    tags = data.tags || [];
+                    
+                    // Update UI
+                    statusText.textContent = data.published ? 
+                        'ထုတ်ပြန်မည့်အနေဖြင့် သိမ်းဆည်းပါမည်' : 
+                        'အကြမ်းအနေဖြင့် သိမ်းဆည်းပါမည်';
+                    
+                    renderTags();
+                    currentEditId = newsId;
+                    
+                    // Switch to add news section
+                    showSection('add-news');
+                    
+                    // Scroll to top
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    
+                    showAlert('သတင်းပြင်ဆင်ရန် ပြင်ဆင်ပြီးပါပြီ', 'info');
+                }
+            } catch (error) {
+                console.error('Error editing news:', error);
+                showAlert('သတင်းပြင်ဆင်၍မရပါ', 'error');
+            }
+        }
+        
+        // Delete News
+        async function deleteNews(newsId) {
+            if (!confirm('ဤသတင်းကို ဖျက်ရန် သေချာပါသလား?')) {
+                return;
+            }
+            
+            try {
+                await window.firebaseDB.collection('news').doc(newsId).delete();
+                showAlert('သတင်းဖျက်ပြီးပါပြီ', 'success');
+                loadAllNews();
+                loadDashboardStats();
+            } catch (error) {
+                console.error('Error deleting news:', error);
+                showAlert('သတင်းဖျက်၍မရပါ', 'error');
+            }
+        }
+        
+        // Load Categories for Management
+        async function loadCategoriesForManagement() {
+            try {
+                const categoriesData = await window.firebaseHelpers.loadCategories();
+                
+                let html = '<div class="categories-grid">';
+                categoriesData.forEach(category => {
+                    html += `
+                        <div class="category-card">
+                            <div class="category-icon">🏷️</div>
+                            <h3 class="category-title">${category.name}</h3>
+                            <div class="category-count">Slug: ${category.slug}</div>
+                            <div class="category-count">စီစဉ်မှု: ${category.order || 1}</div>
+                            <div class="action-buttons">
+                                <button onclick="editCategory('${category.id}')" 
+                                        class="btn btn-sm" style="margin-right: 5px;">
+                                    ပြင်ရန်
+                                </button>
+                                <button onclick="deleteCategory('${category.id}')" 
+                                        class="btn btn-sm btn-danger">
+                                    ဖျက်ရန်
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                
+                categoriesList.innerHTML = html;
+                
+            } catch (error) {
+                console.error('Error loading categories:', error);
+                categoriesList.innerHTML = '<div class="no-results">ကဏ္ဍများ ရယူရာတွင် အမှားတက်ခဲ့သည်</div>';
+            }
+        }
+        
+        // Add Category
+        async function addCategory() {
+            try {
+                if (!categoryName.value.trim()) {
+                    showAlert('ကျေးဇူးပြု၍ ကဏ္ဍအမည်ထည့်ပါ', 'warning');
+                    categoryName.focus();
+                    return;
+                }
+                
+                if (!categorySlug.value.trim()) {
+                    showAlert('ကျေးဇူးပြု၍ slug ထည့်ပါ', 'warning');
+                    categorySlug.focus();
+                    return;
+                }
+                
+                const categoryData = {
+                    name: categoryName.value.trim(),
+                    slug: categorySlug.value.trim(),
+                    order: parseInt(categoryOrder.value) || 1,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                await window.firebaseDB.collection('categories').add(categoryData);
+                
+                showAlert('ကဏ္ဍထည့်ပြီးပါပြီ', 'success');
+                
+                // Clear form
+                categoryName.value = '';
+                categorySlug.value = '';
+                categoryOrder.value = '1';
+                
+                // Reload categories
+                loadCategoriesForSelect();
+                loadCategoriesForManagement();
+                loadDashboardStats();
+                
+            } catch (error) {
+                console.error('Error adding category:', error);
+                showAlert('ကဏ္ဍထည့်၍မရပါ: ' + error.message, 'error');
+            }
+        }
+        
+        // Edit Category (to be implemented)
+        function editCategory(categoryId) {
+            showAlert('ကဏ္ဍပြင်ဆင်ခြင်း နောက်ပိုင်းဗားရှင်းတွင် ထည့်သွင်းပါမည်', 'info');
+        }
+        
+        // Delete Category
+        async function deleteCategory(categoryId) {
+            if (!confirm('ဤကဏ္ဍကို ဖျက်ရန် သေချာပါသလား? ဤကဏ္ဍနှင့်ဆိုင်သော သတင်းများလည်း ပြောင်းလဲသွားနိုင်ပါသည်။')) {
+                return;
+            }
+            
+            try {
+                await window.firebaseDB.collection('categories').doc(categoryId).delete();
+                showAlert('ကဏ္ဍဖျက်ပြီးပါပြီ', 'success');
+                loadCategoriesForManagement();
+                loadDashboardStats();
+            } catch (error) {
+                console.error('Error deleting category:', error);
+                showAlert('ကဏ္ဍဖျက်၍မရပါ', 'error');
+            }
+        }
+        
+        // Show Alert
+        function showAlert(message, type = 'info') {
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = `
+                <span>${type === 'error' ? '❌' : 
+                         type === 'success' ? '✅' : 
+                         type === 'warning' ? '⚠️' : 'ℹ️'}</span>
+                <span>${message}</span>
+                <button onclick="this.parentElement.remove()" 
+                        style="margin-left: auto; background: none; border: none; font-size: 1.25rem; cursor: pointer;">
+                    &times;
+                </button>
+            `;
+            
+            alertContainer.appendChild(alert);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (alert.parentElement) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+        
+        // Close Modal
+        function closeModal() {
+            document.getElementById('editModal').classList.remove('active');
+        }
+        
+        // CSS for status classes
+        const style = document.createElement('style');
+        style.textContent = `
+            .status-published { background: var(--success-color); color: white; }
+            .status-draft { background: var(--warning-color); color: white; }
+            .status-pending { background: var(--info-color); color: white; }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
