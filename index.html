@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>သူရိယအွန်လိုင်းသတင်းစာ</title>
+    <style>
+        body { font-family: 'Pyidaungsu', sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        header { background: #2c3e50; color: white; padding: 20px; border-radius: 5px; }
+        .news-item { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        button { padding: 10px 20px; background: #3498db; color: white; border: none; cursor: pointer; }
+    </style>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
+</head>
+<body>
+    <header>
+        <h1>သူရိယအွန်လိုင်းသတင်းစာ</h1>
+        <button id="loginBtn">Login</button>
+    </header>
+
+    <main>
+        <h2>နောက်ဆုံးရသတင်းများ</h2>
+        <div id="newsContainer">
+            <p>သတင်းများ လာမည်...</p>
+        </div>
+    </main>
+
+    <!-- Firebase Configuration -->
+    <script src="js/firebase-config.js"></script>
+    
+    <script>
+        // Load news from Firebase
+        function loadNews() {
+            db.collection("news").where("published", "==", true)
+                .orderBy("createdAt", "desc")
+                .limit(10)
+                .get()
+                .then((querySnapshot) => {
+                    const container = document.getElementById("newsContainer");
+                    container.innerHTML = "";
+                    
+                    querySnapshot.forEach((doc) => {
+                        const news = doc.data();
+                        const newsElement = `
+                            <div class="news-item">
+                                <h3>${news.title}</h3>
+                                <p>${news.summary || news.content.substring(0, 150)}...</p>
+                                <small>${news.author} • ${new Date(news.createdAt?.toDate()).toLocaleDateString('my-MM')}</small>
+                            </div>
+                        `;
+                        container.innerHTML += newsElement;
+                    });
+                })
+                .catch((error) => {
+                    console.error("Error loading news:", error);
+                });
+        }
+
+        // Load news when page loads
+        document.addEventListener('DOMContentLoaded', loadNews);
+    </script>
+</body>
+</html>
