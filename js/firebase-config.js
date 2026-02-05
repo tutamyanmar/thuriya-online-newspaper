@@ -3,7 +3,7 @@ const firebaseConfig = {
     apiKey: "AIzaSyA2fT5IjoIkmol4nufob-YSY3xbU5wV0UU",
     authDomain: "thuriya-online-newspaper.firebaseapp.com",
     projectId: "thuriya-online-newspaper",
-    storageBucket: "AIzaSyA2fT5IjoIkmol4nufob-YSY3xbU5wV0UU",
+    storageBucket: "thuriya-online-newspaper.appspot.com",
     messagingSenderId: "339188278267",
     appId: "1:339188278267:web:916881e3e9b7649d60a15e"
 };
