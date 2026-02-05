@@ -11,10 +11,9 @@ const firebaseConfig = {
 // Initialize Firebase
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
-    console.log("✅ Firebase initialized");
+    console.log("✅ Firebase initialized for Thuriya News");
 }
-
-// Export services
+// Initialize services
 const db = firebase.firestore();
 const auth = firebase.auth();
 
@@ -59,10 +58,43 @@ async function loadNewsArticles(options = {}) {
     }
 }
 
-// Export to window object
+// Login function
+async function loginUser(email, password) {
+    try {
+        await auth.signInWithEmailAndPassword(email, password);
+        return { success: true };
+    } catch (error) {
+        return { success: false, error: error.message };
+    }
+}
+
+// Logout function
+async function logoutUser() {
+    try {
+        await auth.signOut();
+        return { success: true };
+    } catch (error) {
+        return { success: false, error: error.message };
+    }
+}
+
+// Export everything to window object
+window.firebaseApp = firebase.app();
 window.firebaseDB = db;
 window.firebaseAuth = auth;
+window.firebaseConfig = firebaseConfig;
+
 window.firebaseHelpers = {
     loadCategories,
-    loadNewsArticles
+    loadNewsArticles,
+    loginUser,
+    logoutUser
+};
+
+// Shortcut for easy access
+window.db = db;
+window.auth = auth;
+
+console.log("🚀 Firebase Config Loaded Successfully!");
+console.log("📊 Project:", firebaseConfig.projectId);
 };
