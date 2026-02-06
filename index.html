@@ -104,6 +104,31 @@
         }
     </style>
 </head>
+    function debugFirebaseConnection() {
+    console.log("=== Firebase Debug ===");
+    console.log("1. Firebase SDK:", typeof firebase !== 'undefined' ? "✅ Loaded" : "❌ Missing");
+    console.log("2. Firebase App:", firebase.apps.length > 0 ? "✅ Initialized" : "❌ Not initialized");
+    console.log("3. Firestore DB:", typeof db !== 'undefined' ? "✅ Available" : "❌ Unavailable");
+    console.log("4. Firebase Auth:", typeof auth !== 'undefined' ? "✅ Available" : "❌ Unavailable");
+    
+    // Try to connect to Firestore
+    if (typeof db !== 'undefined') {
+        db.collection('categories').get()
+            .then(snapshot => {
+                console.log("5. Firestore Connection:", "✅ Success", snapshot.size + " categories found");
+            })
+            .catch(error => {
+                console.log("5. Firestore Connection:", "❌ Failed", error.code, error.message);
+                
+                if (error.code === 'permission-denied') {
+                    alert("Firestore Rules ပြဿနာရှိနေပါသည်။ Firebase Console မှာ Rules ကို ပြင်ပေးပါ။");
+                }
+            });
+    }
+}
+
+// Call this function in your checkFirebaseConnection
+setTimeout(debugFirebaseConnection, 3000);
 <body>
     <!-- Simple Header -->
     <header style="background: #2c3e50; color: white; padding: 1rem 2rem;">
