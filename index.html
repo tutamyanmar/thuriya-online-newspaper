@@ -13,84 +13,11 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
     
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Padauk', 'Pyidaungsu', sans-serif;
-        }
-        
-        body {
-            background-color: #f5f5f5;
-            color: #333;
-            line-height: 1.6;
-        }
-        
-        /* Header */
-        header {
-            background: linear-gradient(135deg, #2c3e50, #4a6491);
-            color: white;
-            padding: 1.5rem 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .header-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-            text-decoration: none;
-            color: white;
-        }
-        
-        .logo span {
-            color: #f1c40f;
-        }
-        
-        nav {
-            display: flex;
-            gap: 1.5rem;
-            align-items: center;
-        }
-        
-        nav a {
-            color: white;
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            transition: background 0.3s;
-        }
-        
-        nav a:hover {
-            background: rgba(255,255,255,0.1);
-        }
-        
-        nav a.active {
-            background: rgba(255,255,255,0.2);
-        }
-        
-        #loginBtn {
-            background: #3498db;
-            border: none;
-            color: white;
-            padding: 0.5rem 1.5rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-        
-        #loginBtn:hover {
-            background: #2980b9;
-        }
-        
-        /* Hero Section */
+        /* Additional styles for index page */
         .hero {
             background: linear-gradient(rgba(44, 62, 80, 0.9), rgba(44, 62, 80, 0.9)), 
                         url('https://images.unsplash.com/photo-1588681664899-f142ff2dc9b1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80');
@@ -100,26 +27,20 @@
             text-align: center;
             padding: 4rem 2rem;
             margin-bottom: 2rem;
+            border-radius: 10px;
         }
         
         .hero h2 {
             font-size: 2.5rem;
             margin-bottom: 1rem;
+            color: white;
         }
         
-        /* Main Content */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
-        
-        /* Categories */
-        .categories {
+        .categories-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 3rem;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
         }
         
         .category-card {
@@ -130,23 +51,29 @@
             box-shadow: 0 3px 10px rgba(0,0,0,0.08);
             transition: transform 0.3s;
             cursor: pointer;
+            border-top: 4px solid #3498db;
         }
         
         .category-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         
-        .category-card h3 {
-            color: #2c3e50;
+        .category-badge {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
             margin-bottom: 0.5rem;
         }
         
-        /* News Grid */
         .news-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 1.5rem;
-            margin-bottom: 3rem;
+            margin: 2rem 0;
         }
         
         .news-card {
@@ -164,16 +91,6 @@
         
         .news-content {
             padding: 1.5rem;
-        }
-        
-        .category-badge {
-            display: inline-block;
-            background: #3498db;
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            margin-bottom: 0.5rem;
         }
         
         .news-title {
@@ -198,38 +115,11 @@
             border-top: 1px solid #eee;
         }
         
-        /* Footer */
-        footer {
-            background: #2c3e50;
-            color: white;
-            text-align: center;
-            padding: 2rem;
-            margin-top: 3rem;
-        }
-        
-        /* Loading */
         .loading {
             text-align: center;
             padding: 3rem;
-            font-size: 1.2rem;
             color: #666;
-            grid-column: 1 / -1;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .header-container {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            
-            .news-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .hero h2 {
-                font-size: 2rem;
-            }
+            font-size: 1.2rem;
         }
         
         /* Category Colors */
@@ -238,19 +128,43 @@
         .cat-3 { background: #e74c3c; }
         .cat-4 { background: #9b59b6; }
         .cat-5 { background: #f39c12; }
+        .cat-6 { background: #1abc9c; }
+        .cat-7 { background: #d35400; }
+        
+        @media (max-width: 768px) {
+            .hero h2 {
+                font-size: 2rem;
+            }
+            
+            .news-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
     <!-- Header -->
-    <header>
+    <header class="main-header">
         <div class="header-container">
-            <a href="index.html" class="logo">သူရိယ<span>သတင်းစာ</span></a>
+            <a href="index.html" class="logo">
+                <span class="logo-icon">📰</span>
+                <span class="logo-text">သူရိယ<span class="logo-highlight">သတင်းစာ</span></span>
+            </a>
             
-            <nav>
-                <a href="index.html" class="active">ပင်မစာမျက်နှာ</a>
-                <a href="news.html">သတင်းများ</a>
-                <a href="admin.html" id="adminLink" style="display: none;">သတင်းထည့်ရန်</a>
-                <button id="loginBtn">Login</button>
+            <nav class="main-nav">
+                <ul class="nav-links">
+                    <li><a href="index.html" class="active">ပင်မစာမျက်နှာ</a></li>
+                    <li><a href="news.html">သတင်းများ</a></li>
+                    <li><a href="admin.html" id="adminLink" style="display: none;">အက်ဒမင်</a></li>
+                </ul>
+                
+                <div class="auth-section">
+                    <button id="loginBtn" class="btn btn-primary">Login</button>
+                </div>
             </nav>
         </div>
     </header>
@@ -264,24 +178,32 @@
     </section>
 
     <!-- Main Content -->
-    <div class="container">
-        <!-- Categories -->
-        <h2 style="margin-bottom: 1.5rem;">ကဏ္ဍများ</h2>
-        <div class="categories" id="categoriesList">
-            <div class="loading">ကဏ္ဍများ ဖော်ပြခြင်း...</div>
-        </div>
+    <main class="container">
+        <!-- Categories Section -->
+        <section class="categories-section">
+            <h2 class="section-title">ကဏ္ဍများ</h2>
+            <div class="categories-grid" id="categoriesList">
+                <div class="loading" id="loadingCategories">ကဏ္ဍများ ဖော်ပြခြင်း...</div>
+            </div>
+        </section>
 
-        <!-- Latest News -->
-        <h2 style="margin-bottom: 1.5rem;">နောက်ဆုံးရသတင်းများ</h2>
-        <div class="news-grid" id="newsGrid">
-            <div class="loading">သတင်းများ ဖော်ပြခြင်း...</div>
-        </div>
-    </div>
+        <!-- Latest News Section -->
+        <section class="news-section">
+            <h2 class="section-title">နောက်ဆုံးရသတင်းများ</h2>
+            <div class="news-grid" id="newsGrid">
+                <div class="loading" id="loadingNews">သတင်းများ ဖော်ပြခြင်း...</div>
+            </div>
+        </section>
+    </main>
 
     <!-- Footer -->
-    <footer>
-        <p>© ၂၀၂၆ သူရိယအွန်လိုင်းသတင်းစာ - နေ့စဥ်နောက်ဆုံးရသတင်းများ</p>
-        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Developed with ❤️ for Myanmar Readers</p>
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-bottom">
+                <p>© ၂၀၂၆ သူရိယအွန်လိုင်းသတင်းစာ - နေ့စဥ်နောက်ဆုံးရသတင်းများ</p>
+                <p style="margin-top: 0.5rem; font-size: 0.9rem;">Developed with ❤️ for Myanmar Readers</p>
+            </div>
+        </div>
     </footer>
 
     <!-- Firebase Configuration -->
@@ -298,36 +220,219 @@
         const adminLink = document.getElementById('adminLink');
         const categoriesList = document.getElementById('categoriesList');
         const newsGrid = document.getElementById('newsGrid');
+        const loadingCategories = document.getElementById('loadingCategories');
+        const loadingNews = document.getElementById('loadingNews');
 
         // Initialize the page
-        document.addEventListener('DOMContentLoaded', function() {
-            checkAuthStatus();
-            loadCategories();
-            loadLatestNews();
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log("=== THURIYA NEWS - STARTING ===");
+            
+            // Check Firebase connection first
+            await checkFirebaseConnection();
+            
+            // Load data
+            await loadCategories();
+            await loadLatestNews();
+            
+            // Setup event listeners
+            setupEventListeners();
         });
 
-        // Check authentication status
-        function checkAuthStatus() {
-            if (window.firebaseAuth) {
-                window.firebaseAuth.onAuthStateChanged((user) => {
-                    if (user) {
-                        loginBtn.textContent = 'Logout';
-                        adminLink.style.display = 'block';
-                        console.log("User logged in:", user.email);
-                    } else {
-                        loginBtn.textContent = 'Login';
-                        adminLink.style.display = 'none';
-                    }
-                });
+        // Check Firebase connection
+        async function checkFirebaseConnection() {
+            try {
+                console.log("Checking Firebase connection...");
+                
+                // Wait for Firebase to load
+                if (!window.firebaseDB) {
+                    console.log("Waiting for Firebase...");
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                }
+                
+                if (window.firebaseDB) {
+                    console.log("✅ Firebase connected successfully");
+                    
+                    // Check authentication status
+                    window.firebaseAuth.onAuthStateChanged((user) => {
+                        if (user) {
+                            console.log("User logged in:", user.email);
+                            loginBtn.textContent = 'Logout';
+                            adminLink.style.display = 'block';
+                        } else {
+                            loginBtn.textContent = 'Login';
+                            adminLink.style.display = 'none';
+                        }
+                    });
+                    
+                } else {
+                    console.error("❌ Firebase not connected");
+                    showError("Firebase ချိတ်ဆက်၍မရပါ။ အင်တာနက် စစ်ဆေးပါ။");
+                }
+                
+            } catch (error) {
+                console.error("Firebase check error:", error);
+                showError("System error: " + error.message);
             }
-            
-            // Login button event
+        }
+
+        // Load categories
+        async function loadCategories() {
+            try {
+                console.log("Loading categories...");
+                
+                if (!window.firebaseHelpers || !window.firebaseHelpers.loadCategories) {
+                    console.error("Firebase helpers not available");
+                    return;
+                }
+                
+                categories = await window.firebaseHelpers.loadCategories();
+                console.log("Loaded categories:", categories.length);
+                
+                if (categories.length === 0) {
+                    categoriesList.innerHTML = `
+                        <div class="no-results">
+                            <p>မည်သည့်ကဏ္ဍမျှ မရှိသေးပါ</p>
+                            <p style="font-size: 0.9rem; margin-top: 10px;">Admin ဝင်ပြီး ကဏ္ဍများ ထည့်သွင်းပါ</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Display categories
+                categoriesList.innerHTML = '';
+                
+                categories.forEach(category => {
+                    // Get category number for color
+                    const catMatch = category.id.match(/cat_(\d+)/);
+                    const catNumber = catMatch ? catMatch[1] : '1';
+                    
+                    const categoryCard = document.createElement('div');
+                    categoryCard.className = 'category-card';
+                    categoryCard.innerHTML = `
+                        <span class="category-badge cat-${catNumber}">${category.name}</span>
+                        <h3>${category.name}</h3>
+                        <p>${category.name} သတင်းများ</p>
+                        <button onclick="viewCategory('${category.id}')" 
+                                class="btn btn-primary" style="margin-top: 10px;">
+                            သတင်းကြည့်ရန်
+                        </button>
+                    `;
+                    categoriesList.appendChild(categoryCard);
+                });
+                
+            } catch (error) {
+                console.error('Error loading categories:', error);
+                categoriesList.innerHTML = `
+                    <div class="no-results">
+                        <p style="color: #e74c3c;">ကဏ္ဍများ ရယူရာတွင် အမှားတက်ခဲ့သည်</p>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Load latest news
+        async function loadLatestNews() {
+            try {
+                console.log("Loading latest news...");
+                
+                if (!window.firebaseHelpers || !window.firebaseHelpers.loadNewsArticles) {
+                    console.error("Firebase helpers not available");
+                    return;
+                }
+                
+                news = await window.firebaseHelpers.loadNewsArticles({
+                    limit: 6,
+                    sortBy: 'newest'
+                });
+                
+                console.log("Loaded news:", news.length);
+                
+                if (news.length === 0) {
+                    newsGrid.innerHTML = `
+                        <div class="no-results" style="grid-column: 1/-1; text-align: center; padding: 3rem;">
+                            <p>မည်သည့်သတင်းမျှ မရှိသေးပါ</p>
+                            <p style="font-size: 0.9rem; margin-top: 10px;">သတင်းအသစ်များ မကြာမီ တင်ပါမည်</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Display news
+                newsGrid.innerHTML = '';
+                
+                news.forEach(item => {
+                    // Find category name
+                    const category = categories.find(cat => cat.id === item.categoryId);
+                    const catMatch = item.categoryId ? item.categoryId.match(/cat_(\d+)/) : null;
+                    const catNumber = catMatch ? catMatch[1] : '1';
+                    
+                    // Format date
+                    const newsDate = item.createdAt ? 
+                        new Date(item.createdAt.toDate()).toLocaleDateString('my-MM', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                        }) : 'မသိရ';
+                    
+                    const newsCard = document.createElement('div');
+                    newsCard.className = 'news-card';
+                    newsCard.innerHTML = `
+                        <div class="news-content">
+                            <span class="category-badge cat-${catNumber}">
+                                ${category ? category.name : 'သတင်း'}
+                            </span>
+                            <h3 class="news-title">${item.title || 'ခေါင်းစဉ်မရှိ'}</h3>
+                            <p class="news-summary">${item.summary || (item.content ? item.content.substring(0, 150) + '...' : 'အကြောင်းအရာမရှိ')}</p>
+                            
+                            <div class="news-meta">
+                                <span>✍️ ${item.author || 'သတင်းထောက်'}</span>
+                                <span>📅 ${newsDate}</span>
+                            </div>
+                            
+                            <button onclick="viewNewsDetail('${item.id}')" 
+                                    class="btn btn-primary" style="margin-top: 15px; width: 100%;">
+                                ဆက်ဖတ်ရန်
+                            </button>
+                        </div>
+                    `;
+                    newsGrid.appendChild(newsCard);
+                });
+                
+            } catch (error) {
+                console.error('Error loading news:', error);
+                newsGrid.innerHTML = `
+                    <div class="no-results" style="grid-column: 1/-1; text-align: center; padding: 3rem;">
+                        <p style="color: #e74c3c;">သတင်းများ ရယူရာတွင် အမှားတက်ခဲ့သည်</p>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // View category
+        function viewCategory(categoryId) {
+            window.location.href = `news.html?category=${categoryId}`;
+        }
+
+        // View news detail
+        function viewNewsDetail(newsId) {
+            // For now, show alert. Later link to detail page
+            alert('သတင်းအပြည့်အစုံကြည့်ရန် - News ID: ' + newsId);
+            console.log('Viewing news detail:', newsId);
+            // TODO: Implement news detail page
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Login button
             loginBtn.addEventListener('click', async function() {
                 if (window.firebaseAuth && window.firebaseAuth.currentUser) {
                     // Logout
                     try {
                         await window.firebaseAuth.signOut();
                         alert("Logout successful");
+                        location.reload();
                     } catch (error) {
                         alert("Logout error: " + error.message);
                     }
@@ -340,6 +445,7 @@
                         try {
                             await window.firebaseAuth.signInWithEmailAndPassword(email, password);
                             alert("Login successful!");
+                            location.reload();
                         } catch (error) {
                             alert("Login error: " + error.message);
                         }
@@ -348,120 +454,27 @@
             });
         }
 
-        // Load categories
-        async function loadCategories() {
-            try {
-                if (!window.firebaseHelpers) {
-                    console.error("Firebase helpers not available");
-                    return;
-                }
-                
-                categories = await window.firebaseHelpers.loadCategories();
-                
-                if (categories.length === 0) {
-                    categoriesList.innerHTML = '<p>မည်သည့်ကဏ္ဍမျှ မရှိသေးပါ</p>';
-                    return;
-                }
-                
-                categoriesList.innerHTML = '';
-                
-                categories.forEach(category => {
-                    const catNumber = category.id.replace('cat_', '');
-                    const categoryCard = document.createElement('div');
-                    categoryCard.className = 'category-card';
-                    categoryCard.innerHTML = `
-                        <span class="category-badge cat-${catNumber}">${category.name}</span>
-                        <h3>${category.name}</h3>
-                        <p>${catNumber} ကဏ္ဍ</p>
-                        <button onclick="viewCategory('${category.id}')" 
-                                style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: #eee; border: none; border-radius: 4px; cursor: pointer;">
-                            ကြည့်ရန်
-                        </button>
-                    `;
-                    categoriesList.appendChild(categoryCard);
-                });
-                
-            } catch (error) {
-                console.error('Error loading categories:', error);
-                categoriesList.innerHTML = '<p>ကဏ္ဍများ ရယူရာတွင် အမှားတက်ခဲ့သည်</p>';
-            }
-        }
-
-        // Load latest news
-        async function loadLatestNews() {
-            try {
-                if (!window.firebaseHelpers) {
-                    console.error("Firebase helpers not available");
-                    return;
-                }
-                
-                news = await window.firebaseHelpers.loadNewsArticles({
-                    limit: 6,
-                    sortBy: 'newest'
-                });
-                
-                if (news.length === 0) {
-                    newsGrid.innerHTML = '<p>မည်သည့်သတင်းမျှ မရှိသေးပါ</p>';
-                    return;
-                }
-                
-                newsGrid.innerHTML = '';
-                
-                news.forEach(item => {
-                    const category = categories.find(cat => cat.id === item.categoryId);
-                    const catNumber = item.categoryId ? item.categoryId.replace('cat_', '') : '1';
-                    
-                    const newsDate = item.createdAt ? 
-                        new Date(item.createdAt.toDate()).toLocaleDateString('my-MM', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                        }) : 'မသိရ';
-                    
-                    const newsCard = document.createElement('div');
-                    newsCard.className = 'news-card';
-                    newsCard.innerHTML = `
-                        <div class="news-content">
-                            <span class="category-badge cat-${catNumber}">
-                                ${category ? category.name : 'အမျိုးအစား'}
-                            </span>
-                            <h3 class="news-title">${item.title}</h3>
-                            <p class="news-summary">${item.summary || (item.content ? item.content.substring(0, 150) : '')}...</p>
-                            
-                            <div class="news-meta">
-                                <span>✍️ ${item.author || 'သတင်းထောက်'}</span>
-                                <span>📅 ${newsDate}</span>
-                            </div>
-                            
-                            <button onclick="viewNewsDetail('${item.id}')" 
-                                    style="margin-top: 1rem; padding: 0.5rem 1.5rem; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                                ဆက်ဖတ်ရန်
-                            </button>
-                        </div>
-                    `;
-                    newsGrid.appendChild(newsCard);
-                });
-                
-            } catch (error) {
-                console.error('Error loading news:', error);
-                newsGrid.innerHTML = '<p>သတင်းများ ရယူရာတွင် အမှားတက်ခဲ့သည်</p>';
-            }
-        }
-
-        // View category
-        function viewCategory(categoryId) {
-            window.location.href = `news.html?category=${categoryId}`;
-        }
-
-        // View news detail
-        function viewNewsDetail(newsId) {
-            alert('သတင်းအပြည့်အစုံကြည့်ရန် - News ID: ' + newsId);
-            // Later: news-detail.html ဆီ ပို့မယ်
+        // Show error message
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.style.cssText = `
+                background: #f8d7da;
+                color: #721c24;
+                padding: 15px;
+                margin: 20px;
+                border-radius: 5px;
+                border: 1px solid #f5c6cb;
+                text-align: center;
+            `;
+            errorDiv.innerHTML = `<strong>Error:</strong> ${message}`;
+            document.querySelector('main').prepend(errorDiv);
         }
 
         // Make functions available globally
         window.viewCategory = viewCategory;
         window.viewNewsDetail = viewNewsDetail;
+        
+        console.log("=== THURIYA NEWS - READY ===");
     </script>
 </body>
 </html>
