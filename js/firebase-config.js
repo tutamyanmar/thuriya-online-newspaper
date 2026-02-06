@@ -98,3 +98,41 @@ window.auth = auth;
 console.log("🚀 Firebase Config Loaded Successfully!");
 console.log("📊 Project:", firebaseConfig.projectId);
 };
+// Add timeout and retry logic
+const MAX_RETRIES = 3;
+let retryCount = 0;
+
+function initializeFirebaseWithRetry() {
+    try {
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+            console.log("✅ Firebase initialized");
+        }
+        
+        window.firebaseApp = firebase.app();
+        window.firebaseDB = firebase.firestore();
+        window.firebaseAuth = firebase.auth();
+        
+        // Enable offline persistence
+        firebase.firestore().enablePersistence()
+            .then(() => console.log("📱 Offline persistence enabled"))
+            .catch(err => console.log("Offline persistence error:", err));
+            
+        console.log("🚀 Firebase services ready!");
+        return true;
+    } catch (error) {
+        console.error("Firebase init error:", error);
+        
+        if (retryCount < MAX_RETRIES) {
+            retryCount++;
+            console.log(`Retrying... (${retryCount}/${MAX_RETRIES})`);
+            setTimeout(initializeFirebaseWithRetry, 2000);
+        } else {
+            console.error("Max retries reached. Firebase failed to initialize.");
+            return false;
+        }
+    }
+}
+
+// Initialize with retry
+initializeFirebaseWithRetry();
